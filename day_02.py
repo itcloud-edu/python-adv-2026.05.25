@@ -132,14 +132,15 @@ class TaskList:
         self.id = id(self)
         self.title = title
 
-    def add(self, task: Task) -> None:
+    def add(self, task: Task) -> 'TaskList':
         print('Добавление: ', task)
         self.items[task.id]=task
+        return self
 
-    def delete(self, id) -> None:
+    def delete(self, id) -> 'TaskList':
         print('Удаление: ', self.items[id])
         del self.items[id]
-
+        return self
 
 
 tasks = TaskList('Список задач')
@@ -149,4 +150,5 @@ tasks.add(task1)
 tasks.add(task2)
 tasks.delete(task1.id)
 
+TaskList("tl1").add(Task("ddd"))
 
