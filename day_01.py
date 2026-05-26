@@ -43,17 +43,35 @@ class Task:
         print('Заголовок изменился')
         self.title = title
         return self
-
     
+    def __str__(self) -> str:
+        return '{' + f'"id": {self.id}, "title": {self.title}, "completed": {self.completed}' + '}'
+
+    def __repr__(self) -> str:
+        return self.__str__()
 
 
 task1 = Task('Задача 1')
+print(task1.title)
 
 
-print(task1.title, task1.completed)
+task_dict = {"id": 3423, "title": "Задача 1", "completed": False}
+print(task_dict["title"])
 
-task1.set_completed().set_title('Задача 1')
+def set_title_dict(task_dict: dict, title: str) -> None:
+        title = title.strip()
+        if not title or task_dict["title"] == title:
+            return None
+        
+        # ядро функции
+        print('Заголовок изменился')
+        task_dict["title"] = title
+    
+set_title_dict(task_dict, "Задача 2")
 
 
-print(task1.title, task1.completed)
+print(task_dict)
+print(task1)
+print(repr(task1))
+
 
