@@ -126,12 +126,11 @@ class Task:
 
 
 
-
 Task('Задача 1')
 Task('Задача 2')
 Task('Задача 3')
 
-task1 = None
+
 
 
 sleep(5)
