@@ -128,19 +128,54 @@ class Task:
 
 class TaskList:
     def __init__(self, title: str) -> None:
-        self.items = dict()
+        self.items = list()
         self.id = id(self)
         self.title = title
 
     def add(self, task: Task) -> 'TaskList':
         print('Добавление: ', task)
-        self.items[task.id]=task
+        self.items.append(task)
         return self
 
-    def delete(self, id) -> 'TaskList':
-        print('Удаление: ', self.items[id])
-        del self.items[id]
+    def delete(self, task_id) -> 'TaskList':
+        removed_task = None
+        for task in self.items:
+            if task.id == task_id:
+                removed_task = task
+                self.items.remove(task)
+                break
+        if removed_task:
+            print('Удаление: ', removed_task)
+        else:
+            print('Удаление: Задача с таким id не найдена')
         return self
+
+    def __str__(self) -> str:
+        """Возвращает красивое строковое представление списка задач."""
+        # ANSI escape codes
+        RESET = '\033[0m'
+        BOLD = '\033[1m'
+        BLUE = '\033[34m'
+        GREEN = '\033[32m'
+        RED = '\033[31m'
+        YELLOW = '\033[33m'
+        CYAN = '\033[36m'
+        GRAY = '\033[90m'
+        
+        header = f'{BOLD}{BLUE}Список задач: "{self.title}" (ID: {self.id}){RESET}'
+        if not self.items:
+            return header + f'\n{GRAY}Задачи отсутствуют.{RESET}'
+        
+        tasks_lines = []
+        for i, task in enumerate(self.items, 1):
+            if task.completed:
+                status = f'{GREEN}✓{RESET}'
+            else:
+                status = f'{RED}✗{RESET}'
+            tasks_lines.append(f'  {YELLOW}{i}.{RESET} [{status}] {task.title} {GRAY}(ID: {task.id}){RESET}')
+        
+        tasks_block = '\n'.join(tasks_lines)
+        return f'{header}\n{CYAN}Задачи:{RESET}\n{tasks_block}'
 
 
 tasks = TaskList('Список задач')
@@ -148,7 +183,8 @@ task1 = Task('Задача 1')
 task2 = Task('Задача 2')
 tasks.add(task1)
 tasks.add(task2)
-tasks.delete(task1.id)
+print(tasks)
+tas
 
-TaskList("tl1").add(Task("ddd"))
+
 
