@@ -34,6 +34,17 @@ class Task:
         tmp.completed = data['completed']
         return tmp
     
+    @classmethod
+    def  is_instance(cls, data) -> bool:
+        return isinstance(data, cls)
+
+    @staticmethod
+    def static_from_dict(data) -> "Task":
+        tmp = Task(data['title'])
+        tmp.id = data['id']
+        tmp.completed = data['completed']
+        return tmp
+    
     def __str__(self) -> str:
         return '{' + f'"id": {self.id}, "title": {self.title}, "completed": {self.completed}' + '}'
 
@@ -59,6 +70,11 @@ with open('task1.json', 'r') as f:
     print(dict_task1)
     task1 = Task(dict_task1['title'])
     print('task1', task1)
-    task2 = Task.from_dict(dict_task1)
+    task2 = Task.static_from_dict(dict_task1)
+    # task2 = Task.from_dict(dict_task1)
     print('task2', task2)
+
+    print(Task.is_instance(dict_task1))
+
+
 
