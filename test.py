@@ -85,10 +85,11 @@ class RectangleBuilder:
 
     def position(x: float, y: float) -> RectangleBuilder:
         return RectangleBuilder.x(x).y(y)
-
-    def fill_color(color: str) -> RectangleBuilder:
-        RectangleBuilder.__fill_color = color
-        return RectangleBuilder
+    
+    @classmethod
+    def fill_color(cls, color: str) -> RectangleBuilder:
+        cls.__fill_color = color
+        return cls
 
     def stroke_color(color: str) -> "RectangleBuilder":
         RectangleBuilder.__stroke_color = color

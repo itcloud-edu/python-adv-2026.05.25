@@ -1,11 +1,56 @@
 import json
+from time import sleep
 
+
+# class Counter:
+#     created = 0
+#     def __init__(self, label: str) -> None:
+#         self.label = label
+#         Counter.created += 1
+        
+
+# a = Counter('A')
+# b = Counter('B')
+# print(Counter.created)
+# print(a.created)
+
+# a.created2 = 10
+# print(a.created2)
+# print(Counter.created)
+# print(b.created)
+
+
+
+
+# class Base:
+#     def __init__(self, label: str) -> None:
+#         self.label = label
+
+
+# def createRectangle (x: float, y: float) -> "Base":
+#     rect = Base('rect1')
+#     rect.x = x
+#     rect.y = y
+#     return rect
+
+# def createCircle (x: float, y: float) -> "Base":
+#     circle = Base('circle1')
+#     circle.x = x
+#     circle.y = y
+#     return circle
+
+
+# r = createRectangle(10, 20)
+# c = createCircle(30, 40)
+# print(isinstance(r, Base), isinstance(c, Base))
 
 class Task:
+    items = []
     def __init__(self, title: str, completed: bool = False) -> None:
         self.id = id(self)
         self.title = title
         self.completed = completed
+        Task.items.append(self)
     
     def set_completed(self) -> "Task":
         self.completed = True
@@ -50,6 +95,9 @@ class Task:
 
     def __repr__(self) -> str:
         return self.__str__()
+    
+    def __del__(self) -> None:
+        print('Удаление объекта')
 
 
 
@@ -65,16 +113,28 @@ class Task:
 #     json.dump(dict_task1, f)
 
 
-with open('task1.json', 'r') as f:
-    dict_task1 = json.load(f)
-    print(dict_task1)
-    task1 = Task(dict_task1['title'])
-    print('task1', task1)
-    task2 = Task.static_from_dict(dict_task1)
-    # task2 = Task.from_dict(dict_task1)
-    print('task2', task2)
+# with open('task1.json', 'r') as f:
+#     dict_task1 = json.load(f)
+#     print(dict_task1)
+#     task1 = Task(dict_task1['title'])
+#     print('task1', task1)
+#     task2 = Task.static_from_dict(dict_task1)
+#     # task2 = Task.from_dict(dict_task1)
+#     print('task2', task2)
 
-    print(Task.is_instance(dict_task1))
+#     print(Task.is_instance(dict_task1))
 
 
 
+
+Task('Задача 1')
+Task('Задача 2')
+Task('Задача 3')
+
+task1 = None
+
+
+sleep(5)
+
+print(Task.items)
+    
