@@ -47,7 +47,7 @@ class Rectangle:
     def area(self) -> float:
         return self.width * self.height
 
-# Билдер для Rectangle
+# Билдер для Rectangle!!!!
 class RectangleBuilder:
     """Builder для Rectangle."""
 
