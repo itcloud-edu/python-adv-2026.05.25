@@ -126,14 +126,27 @@ class Task:
 
 
 
-Task('Задача 1')
-Task('Задача 2')
-Task('Задача 3')
+class TaskList:
+    def __init__(self, title: str) -> None:
+        self.items = dict()
+        self.id = id(self)
+        self.title = title
+
+    def add(self, task: Task) -> None:
+        print('Добавление: ', task)
+        self.items[task.id]=task
+
+    def delete(self, id) -> None:
+        print('Удаление: ', self.items[id])
+        del self.items[id]
 
 
 
+tasks = TaskList('Список задач')
+task1 = Task('Задача 1')
+task2 = Task('Задача 2')
+tasks.add(task1)
+tasks.add(task2)
+tasks.delete(task1.id)
 
-sleep(5)
 
-print(Task.items)
-    
