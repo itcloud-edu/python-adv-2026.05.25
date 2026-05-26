@@ -1,3 +1,6 @@
+import json
+
+
 class Task:
     def __init__(self, title: str, completed: bool = False) -> None:
         self.id = id(self)
@@ -18,8 +21,44 @@ class Task:
         self.title = title
         return self
     
+    def to_dict(self) -> dict:
+        return {
+            "id": self.id,
+            "title": self.title,
+            "completed": self.completed
+        }
+    @classmethod
+    def from_dict(cls, data) -> "Task":
+        tmp = cls(data['title'])
+        tmp.id = data['id']
+        tmp.completed = data['completed']
+        return tmp
+    
     def __str__(self) -> str:
         return '{' + f'"id": {self.id}, "title": {self.title}, "completed": {self.completed}' + '}'
 
     def __repr__(self) -> str:
         return self.__str__()
+
+
+
+
+# task1 = Task('Задача 1')
+# dict_task1 = task1.to_dict()
+# print(dict_task1)
+
+# # str_task1 = json.dumps(dict_task1)
+# # print(str_task1)
+
+# with open('task1.json', 'w') as f:
+#     json.dump(dict_task1, f)
+
+
+with open('task1.json', 'r') as f:
+    dict_task1 = json.load(f)
+    print(dict_task1)
+    task1 = Task(dict_task1['title'])
+    print('task1', task1)
+    task2 = Task.from_dict(dict_task1)
+    print('task2', task2)
+
