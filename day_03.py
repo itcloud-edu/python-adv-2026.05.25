@@ -15,31 +15,31 @@ class Task:
     def __init__(self, title: str, completed: bool = False) -> None:
         self.id = id(self)
         self.__title = title
-        self._proirity = 1
+        self._priority = 1
         self._completed = completed
         Task.items.append(self)
 
     @property   
-    def proirity(self) -> int:
-        return (self._proirity, self.PRIORITY[self._proirity])
+    def priority(self) -> int:
+        return (self._priority, self.PRIORITY[self._priority])
     
-    @proirity.setter
-    def proirity(self, proirity: any) -> None:
-        # task.proirity = 2
-        if isinstance(proirity, int):
-            if proirity in [1, 2, 3]:
-                self._proirity = proirity
-            if proirity > 3:
-                self._proirity = 3
-            if proirity < 1:
-                self._proirity = 1
-        if isinstance(proirity, str):
-            if proirity == 'low':
-                self._proirity = 1
-            if proirity == 'normal':
-                self._proirity = 2
-            if proirity == 'high':
-                self._proirity = 3
+    @priority.setter
+    def priority(self, priority: any) -> None:
+        # task.priority = 2
+        if isinstance(priority, int):
+            if priority in [1, 2, 3]:
+                self._priority = priority
+            if priority > 3:
+                self._priority = 3
+            if priority < 1:
+                self._priority = 1
+        if isinstance(priority, str):
+            if priority == 'low':
+                self._priority = 1
+            if priority == 'normal':
+                self._priority = 2
+            if priority == 'high':
+                self._priority = 3
                 
         
 
@@ -100,8 +100,38 @@ class Task:
     def __repr__(self) -> str:
         return self.__str__()
     
-    def __del__(self) -> None:
-        print('Удаление объекта')
+    # def __del__(self) -> None:
+    #     print('Удаление объекта')
+
+    def __lt__(self, other) -> bool:
+        if not isinstance(other, Task):
+            return NotImplemented
+        return self.priority < other.priority
+    
+    def __le__(self, other) -> bool:
+        if not isinstance(other, Task):
+            return NotImplemented
+        return self.priority <= other.priority
+    
+    def __eq__(self, other) -> bool:
+        if not isinstance(other, Task):
+            return NotImplemented
+        return self.priority == other.priority
+    
+    def __ne__(self, other) -> bool:
+        if not isinstance(other, Task):
+            return NotImplemented
+        return self.priority != other.priority
+    
+    def __gt__(self, other) -> bool:
+        if not isinstance(other, Task):
+            return NotImplemented
+        return self.priority > other.priority
+    
+    def __ge__(self, other) -> bool:
+        if not isinstance(other, Task):
+            return NotImplemented
+        return self.priority >= other.priority
 
 
 
@@ -168,22 +198,22 @@ class TaskList:
         return f'{header}\n{CYAN}Задачи:{RESET}\n{tasks_block}'
 
 
+
 tasks = TaskList('Список задач')
 task1 = Task('Задача 1')
 task2 = Task('Задача 2')
-tasks.add(task1)
-tasks.add(task2)
+task2.priority = 3
 
-task1.title = 'Задача 1111'
-task1.completed = True
-print(tasks)
-print(task1.proirity)
-task1.proirity = 'high'
-print(task1.proirity)
-task1.proirity = 2
-print(task1.proirity)
+print(task1.priority < task2.priority)
+print(task1.priority > task2.priority)
+print(task1.priority <= task2.priority)
+print(task1.priority >= task2.priority)
+print(task1.priority == task2.priority)
+print(task1.priority != task2.priority)
 
-print(len(tasks))
-print(tasks.len())
-print(tasks.length)
+print(task1.priority, task2.priority)
+
+
+
+print(task1 < task2)
 
