@@ -70,7 +70,7 @@ class Dolar(Currency):
     convertion_rate: float = 71.15
     def convert_to(self, carrency_type: type) -> 'Ruble':
         if carrency_type is Kopeck:
-            return Ruble(self.count * self.convertion_rate * Kopeck.convertion_rate)
+            return Kopeck(self.count * self.convertion_rate * Kopeck.convertion_rate)
         if carrency_type is Dolar:
             return self
         if carrency_type is Ruble:
