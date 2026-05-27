@@ -1,28 +1,38 @@
-class Currency:
+from abc import ABC, abstractmethod
+
+
+class Currency(ABC):
     label = 'CUR'
+    convertion_rate: float = 0
 
     def __init__(self, count: int)-> None:
         self.count = count
 
-    def __add__(self, other) -> int | float:
+    @abstractmethod
+    def convert_to(self, carrency_type: type) -> 'Currency':
+        pass
+
+    def __add__(self, other) -> 'Currency':
         if not isinstance(other, Currency):
             return NotImplemented
-        return (self.count + other.count)
+        other = other.convert_to(self.__class__)
+        return self.__class__(self.count + other.count)
     
     def __sub__(self, other) -> int | float:
         if not isinstance(other, Currency):
             return NotImplemented
-        return (self.count - other.count)
-
-    def __mul__(self, other) -> int | float:
-        if not isinstance(other, int or float):
-            return NotImplemented
-        return (self.count * other)
+        other = other.convert_to(self.__class__)
+        return self.__class__(self.count - other.count)
     
-    def __truediv__(self, other) -> int | float:
-        if not isinstance(other, int or float):
+    def __mul__(self, other) -> int | float:
+        if not isinstance(other, int | float):
             return NotImplemented
-        return (self.count / other)
+        return self.__class__(self.count * other)
+
+    def __truediv__(self, other) -> int | float:
+        if not isinstance(other, int | float):
+            return NotImplemented
+        return self.__class__(self.count / other)
     
     def __str__(self) -> str:
         return f'{self.count} {self.label}'
@@ -31,66 +41,49 @@ class Currency:
 
 class Kopeck(Currency):
     label = 'KOP'
-    @classmethod
-    def form_ruble(cls, ruble: Ruble) -> 'Kopeck':
-        return cls(ruble.count * 100)
-
-
-    def __add__(self, other) -> 'Kopeck':
-        if isinstance(other, Ruble):
-            other = Kopeck.form_ruble(other)
-        return Kopeck(super().__add__(other))
+    convertion_rate: float = 0.01
     
-    def __sub__(self, other) -> 'Kopeck':
-        if isinstance(other, Ruble):
-            other = Kopeck.form_ruble(other)
-        return Kopeck(super().__sub__(other))
-    
-    def __mul__(self, other) -> 'Kopeck':
-        return Kopeck(super().__mul__(other))
-        
-    def __truediv__(self, other) -> 'Kopeck':
-        return Kopeck(super().__truediv__(other))
-
-
+    def convert_to(self, carrency_type: type) -> 'Ruble':
+        if carrency_type is Kopeck:
+            return self
+        if carrency_type is Dolar:
+            return Dolar(self.count * self.convertion_rate / Dolar.convertion_rate )
+        if carrency_type is Ruble:
+            return Ruble(self.count * self.convertion_rate)
 
 
 class Ruble(Currency):
     label = 'RUB'
-    @classmethod
-    def form_kopeck(cls, kopeck: Kopeck) -> 'Ruble':
-        return cls(kopeck.count / 100)
-    
-    def __add__(self, other) -> 'Ruble':
-        if isinstance(other, Kopeck):
-            other = Ruble.form_kopeck(other)
-        return Ruble(super().__add__(other))
-    
-    def __sub__(self, other) -> 'Ruble':
-        if isinstance(other, Kopeck):
-            other = Ruble.form_kopeck(other)
-        return Ruble(super().__sub__(other))
-    
-    def __mul__(self, other) -> 'Ruble':
-        return Ruble(super().__mul__(other))
-    
-    def __truediv__(self, other) -> 'Ruble':
-        return Ruble(super().__truediv__(other))
+    convertion_rate: float = 1
 
-    
+    def convert_to(self, carrency_type: type) -> 'Ruble':
+        if carrency_type is Kopeck:
+            return Kopeck(self.count / Kopeck.convertion_rate)
+        if carrency_type is Dolar:
+            return Dolar(self.count / Dolar.convertion_rate)
+        if carrency_type is Ruble:
+            return self
+            
 
 class Dolar(Currency):
     label = 'DOL'
+    convertion_rate: float = 71.15
+    def convert_to(self, carrency_type: type) -> 'Ruble':
+        if carrency_type is Kopeck:
+            return Ruble(self.count * self.convertion_rate * Kopeck.convertion_rate)
+        if carrency_type is Dolar:
+            return self
+        if carrency_type is Ruble:
+            return Ruble(self.count * self.convertion_rate)
     
-    def __add__(self, other) -> 'Dolar':
-        return Dolar(super().__add__(other))
     
-    def __sub__(self, other) -> 'Dolar':
-        return Dolar(super().__sub__(other))
     
-    def __mul__(self, other) -> 'Dolar':
-        return Dolar(super().__mul__(other))
-    
-    def __truediv__(self, other) -> 'Dolar':
-        return Dolar(super().__truediv__(other))      
 
+
+
+r = Ruble(100)
+d = Dolar(100)
+
+print(r - d)
+print(d - r)
+print(Kopeck(100) + Ruble(10) * 3)
