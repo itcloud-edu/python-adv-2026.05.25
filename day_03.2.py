@@ -12,7 +12,6 @@ class Currency:
     def __sub__(self, other) -> int | float:
         if not isinstance(other, Currency):
             return NotImplemented
-            return NotImplemented
         return (self.count - other.count)
 
     def __mul__(self, other) -> int | float:
