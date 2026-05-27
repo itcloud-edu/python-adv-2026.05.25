@@ -149,6 +149,10 @@ class TaskList:
         self.items.append(task)
         self.length = len(self.items)
         return self
+    
+    def  sort (self, reverse=False) -> 'TaskList':
+        self.items.sort(reverse=reverse)
+        return self
 
     def delete(self, task_id) -> 'TaskList':
         removed_task = None
@@ -192,7 +196,7 @@ class TaskList:
                 status = f'{GREEN}✓{RESET}'
             else:
                 status = f'{RED}✗{RESET}'
-            tasks_lines.append(f'  {YELLOW}{i}.{RESET} [{status}] {task._Task__title} {GRAY}(ID: {task.id}){RESET}')
+            tasks_lines.append(f'  {YELLOW}{i}.{RESET} [{status}] {task.priority[1]} - {task._Task__title}  {GRAY}(ID: {task.id}){RESET}')
         
         tasks_block = '\n'.join(tasks_lines)
         return f'{header}\n{CYAN}Задачи:{RESET}\n{tasks_block}'
@@ -202,7 +206,9 @@ class TaskList:
 tasks = TaskList('Список задач')
 task1 = Task('Задача 1')
 task2 = Task('Задача 2')
+
 task2.priority = 3
+tasks.add(task1).add(task2).add(Task('Задача 3')).add(Task('Задача 4'))
 
 print(task1.priority < task2.priority)
 print(task1.priority > task2.priority)
@@ -216,4 +222,10 @@ print(task1.priority, task2.priority)
 
 
 print(task1 < task2)
+
+print(tasks)
+tasks.sort()
+print(tasks)
+tasks.sort(reverse=True)
+print(tasks)
 
