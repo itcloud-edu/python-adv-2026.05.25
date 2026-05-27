@@ -5,15 +5,24 @@ class Currency:
         self.count = count
 
     def __add__(self, other) -> int | float:
+        if not isinstance(other, Currency):
+            return NotImplemented
         return (self.count + other.count)
     
     def __sub__(self, other) -> int | float:
+        if not isinstance(other, Currency):
+            return NotImplemented
+            return NotImplemented
         return (self.count - other.count)
 
     def __mul__(self, other) -> int | float:
+        if not isinstance(other, int or float):
+            return NotImplemented
         return (self.count * other)
     
     def __truediv__(self, other) -> int | float:
+        if not isinstance(other, int or float):
+            return NotImplemented
         return (self.count / other)
     
     def __str__(self) -> str:
@@ -23,12 +32,19 @@ class Currency:
 
 class Kopeck(Currency):
     label = 'KOP'
+    @classmethod
+    def form_ruble(cls, ruble: Ruble) -> 'Kopeck':
+        return cls(ruble.count * 100)
 
 
     def __add__(self, other) -> 'Kopeck':
+        if isinstance(other, Ruble):
+            other = Kopeck.form_ruble(other)
         return Kopeck(super().__add__(other))
     
     def __sub__(self, other) -> 'Kopeck':
+        if isinstance(other, Ruble):
+            other = Kopeck.form_ruble(other)
         return Kopeck(super().__sub__(other))
     
     def __mul__(self, other) -> 'Kopeck':
@@ -47,9 +63,13 @@ class Ruble(Currency):
         return cls(kopeck.count / 100)
     
     def __add__(self, other) -> 'Ruble':
+        if isinstance(other, Kopeck):
+            other = Ruble.form_kopeck(other)
         return Ruble(super().__add__(other))
     
     def __sub__(self, other) -> 'Ruble':
+        if isinstance(other, Kopeck):
+            other = Ruble.form_kopeck(other)
         return Ruble(super().__sub__(other))
     
     def __mul__(self, other) -> 'Ruble':
@@ -67,3 +87,4 @@ k1 = Kopeck(100)
 r1 = Ruble(100)
 
 print(r1 + k1)
+print(k1 + r1)
