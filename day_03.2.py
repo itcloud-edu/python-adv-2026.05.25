@@ -79,11 +79,18 @@ class Ruble(Currency):
 
     
 
-        
+class Dolar(Currency):
+    label = 'DOL'
+    
+    def __add__(self, other) -> 'Dolar':
+        return Dolar(super().__add__(other))
+    
+    def __sub__(self, other) -> 'Dolar':
+        return Dolar(super().__sub__(other))
+    
+    def __mul__(self, other) -> 'Dolar':
+        return Dolar(super().__mul__(other))
+    
+    def __truediv__(self, other) -> 'Dolar':
+        return Dolar(super().__truediv__(other))      
 
-
-k1 = Kopeck(100) 
-r1 = Ruble(100)
-
-print(r1 + k1)
-print(k1 + r1)
