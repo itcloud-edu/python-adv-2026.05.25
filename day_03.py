@@ -1,56 +1,48 @@
-import json
-from time import sleep
 
 
-# class Counter:
-#     created = 0
-#     def __init__(self, label: str) -> None:
-#         self.label = label
-#         Counter.created += 1
-        
-
-# a = Counter('A')
-# b = Counter('B')
-# print(Counter.created)
-# print(a.created)
-
-# a.created2 = 10
-# print(a.created2)
-# print(Counter.created)
-# print(b.created)
-
-
-
-
-# class Base:
-#     def __init__(self, label: str) -> None:
-#         self.label = label
-
-
-# def createRectangle (x: float, y: float) -> "Base":
-#     rect = Base('rect1')
-#     rect.x = x
-#     rect.y = y
-#     return rect
-
-# def createCircle (x: float, y: float) -> "Base":
-#     circle = Base('circle1')
-#     circle.x = x
-#     circle.y = y
-#     return circle
-
-
-# r = createRectangle(10, 20)
-# c = createCircle(30, 40)
-# print(isinstance(r, Base), isinstance(c, Base))
-
+'''
+property=1 - low 
+property=2 - normal
+property=3 - high
+'''
 class Task:
     items = []
+    PRIORITY = {
+        1: 'low',
+        2: 'normal',
+        3: 'high'
+    }
     def __init__(self, title: str, completed: bool = False) -> None:
         self.id = id(self)
         self.__title = title
+        self._proirity = 1
         self._completed = completed
         Task.items.append(self)
+
+    @property   
+    def proirity(self) -> int:
+        return (self._proirity, self.PRIORITY[self._proirity])
+    
+    @proirity.setter
+    def proirity(self, proirity: any) -> None:
+        # task.proirity = 2
+        if isinstance(proirity, int):
+            if proirity in [1, 2, 3]:
+                self._proirity = proirity
+            if proirity > 3:
+                self._proirity = 3
+            if proirity < 1:
+                self._proirity = 1
+        if isinstance(proirity, str):
+            if proirity == 'low':
+                self._proirity = 1
+            if proirity == 'normal':
+                self._proirity = 2
+            if proirity == 'high':
+                self._proirity = 3
+                
+        
+
 
     @property
     def title(self) -> str:
@@ -185,7 +177,12 @@ tasks.add(task2)
 task1.title = 'Задача 1111'
 task1.completed = True
 print(tasks)
-print(task1.title)
+print(task1.proirity)
+task1.proirity = 'high'
+print(task1.proirity)
+task1.proirity = 2
+print(task1.proirity)
+
 print(len(tasks))
 print(tasks.len())
 print(tasks.length)
