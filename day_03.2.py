@@ -62,13 +62,8 @@ class Ruble(Currency):
 
         
 
- 
 
 k1 = Kopeck(100) 
-
 r1 = Ruble(100)
-r2 = Ruble(200)
-print(type(r2))
 
-
-print(type(r1 + r2))
+print(r1 + k1)
