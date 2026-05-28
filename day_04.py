@@ -1,7 +1,7 @@
 class Game:
     _instance = None
 
-    def __new__(cls, value: str) -> 'Game':
+    def __new__(cls, *args, **kwargs) -> 'Game':
         if cls._instance is None:
             cls._instance = super().__new__(cls)
             cls._instance.initialized = False
