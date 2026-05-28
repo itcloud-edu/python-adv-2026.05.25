@@ -191,6 +191,9 @@ class TicTacToe(BoardGame):
             return "draw"
         return None
     
+class Stick21(BoardGame):
+    pass
+
 
 class Game:
     _instance = None
