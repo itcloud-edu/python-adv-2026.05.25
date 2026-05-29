@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 import random
-from enum import Enum
+from enum import Enum, StrEnum
+from dataclasses import dataclass, field
 
 class GameResult(Enum):
     HUMAN_WIN = "human_win"
@@ -14,7 +15,7 @@ class GameResult(Enum):
             GameResult.DRAW: "Ничья"
         }[self]
     
-class Cell(Enum):
+class Cell(StrEnum):
     EMPTY = "."
     X = "X"
     O = "O"
@@ -42,6 +43,16 @@ class Draw(ABC):
     @abstractmethod
     def output(self, value: str) -> None:
         pass
+
+
+@dataclass
+class TicTacToeState:
+    board: list[str] = field(default_factory=lambda: [Cell.EMPTY] * 9)
+
+@dataclass
+class Stick21State:
+    sticks: int = 21
+    last_player: str | None = None
 
 
 class ConsoleDraw(Draw):
@@ -166,17 +177,17 @@ class TicTacToe(BoardGame):
 
     def __init__(self, human: HumanPlayer, computer: ComputerPlayer) -> None:
         super().__init__(human, computer)
-        self._board: list[Cell] = []
+        self._state = TicTacToeState()
         self._marks: dict[Player, str] = {}
 
     def reset(self) -> None:
-        self._board = [Cell.EMPTY] * 9
+        self._state = TicTacToeState()
         self._marks = {self._human: Cell.X, self._computer: Cell.O}
         self._current = self._human
 
     def render(self) -> str:
         cells = []
-        for i, cell in enumerate(self._board):
+        for i, cell in enumerate(self._state.board):
             if cell == Cell.EMPTY:
                 cells.append(str(i + 1))
             else:
@@ -190,7 +201,7 @@ class TicTacToe(BoardGame):
 
     def valid_moves(self) -> list[int]:
         moves = []
-        for i, cell in enumerate(self._board):
+        for i, cell in enumerate(self._state.board):
             if cell == Cell.EMPTY:
                 moves.append(i)
         return moves
@@ -208,12 +219,12 @@ class TicTacToe(BoardGame):
 
     def apply_move(self, value: int) -> None:
         mark = self._marks[self._current]
-        self._board[value] = mark
+        self._state.board[value] = mark
 
     def _winner_mark(self) -> Cell:
         for a, b, c in self._WIN_LIST:
-            if self._board[a] != Cell.EMPTY and self._board[a] == self._board[b] == self._board[c]:
-                return self._board[a]
+            if self._state.board[a] != Cell.EMPTY and self._state.board[a] == self._state.board[b] == self._state.board[c]:
+                return self._state.board[a]
         return None
 
     def check_result(self) -> GameResult | None:
@@ -221,7 +232,7 @@ class TicTacToe(BoardGame):
         if winner:
             human_mark = self._marks[self._human]
             return GameResult.HUMAN_WIN if winner == human_mark else GameResult.COMPUTER_WIN
-        if Cell.EMPTY not in self._board:
+        if Cell.EMPTY not in self._state.board:
             return GameResult.DRAW
         return None
 
@@ -232,20 +243,18 @@ class Stick21(BoardGame):
 
     def __init__(self, human: HumanPlayer, computer: ComputerPlayer) -> None:
         super().__init__(human, computer)
-        self._sticks = self._INITIAL_STICKS
-        self._last_player: Player | None = None
+        self._state = Stick21State()
 
     def reset(self) -> None:
-        self._sticks = self._INITIAL_STICKS
-        self._last_player = None
+        self._state = Stick21State()
         self._current = self._human
 
     def render(self) -> str:
-        bar = "|" * self._sticks if self._sticks else "(пусто)"
-        return f"Палочек: {self._sticks}\n{bar}"
+        bar = "|" * self._state.sticks if self._state.sticks else "(пусто)"
+        return f"Палочек: {self._state.sticks}\n{bar}"
 
     def valid_moves(self) -> list[int]:
-        return [n for n in range(1, self._MAX_TAKE + 1) if n <= self._sticks]
+        return [n for n in range(1, self._MAX_TAKE + 1) if n <= self._state.sticks]
 
     def move_prompt(self) -> str:
         opts = ", ".join(str(n) for n in self.valid_moves())
@@ -264,13 +273,13 @@ class Stick21(BoardGame):
         return str(move)
 
     def apply_move(self, move: int) -> None:
-        self._sticks -= move
-        self._last_player = self._current
+        self._state.sticks -= move
+        self._state.last_player = self._current
 
     def check_result(self) -> GameResult | None:
-        if self._sticks > 0:
+        if self._state.sticks > 0:
             return None
-        if self._last_player is self._human:
+        if self._state.last_player is self._human:
             return GameResult.COMPUTER_WIN
         return GameResult.HUMAN_WIN
 
@@ -333,13 +342,13 @@ class Game:
             draw.output('1. Крестики-нолики')
             draw.output('2. 21 палочка')
             draw.output('0. Выйти')
-            choice = draw.input('Выберите игру: ')
-            if choice == '1':
+            choice = MenuChoice.from_input(draw.input('Выберите игру: ').strip())
+            if choice == MenuChoice.TIC_TAC_TOE:
                 draw.output('\n ---- Креститки-нолики ----')
                 draw.output('Вы - X, компьютер - O')
                 self._current_game = TicTacToe(self.human, self.computer)
                 return None
-            if choice == '2':
+            if choice == MenuChoice.STICK_21:
                 draw.output('\n ---- 21 палочка ----')
                 draw.output(
                     'За ход можно забрать 1, 2 или 3. '
@@ -348,7 +357,7 @@ class Game:
                 self._current_game = Stick21(self.human, self.computer)
                 return None
 
-            if choice == '0':
+            if choice == MenuChoice.EXIT:
                 self._current_game = None
                 return None
 
