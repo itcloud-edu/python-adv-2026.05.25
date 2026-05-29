@@ -20,6 +20,19 @@ class Cell(Enum):
     O = "O"
         
 
+class MenuChoice(Enum):
+    TIC_TAC_TOE = "1"
+    STICK_21 = "2"
+    EXIT = "0"
+
+    @classmethod
+    def from_input(cls, raw: str) -> "MenuChoice | None":
+        for item in cls:
+            if item.value == raw:
+                return item
+        return None
+
+
 
 class Draw(ABC):
     @abstractmethod
