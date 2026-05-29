@@ -13,6 +13,11 @@ class GameResult(Enum):
             GameResult.COMPUTER_WIN: "Вы проиграли",
             GameResult.DRAW: "Ничья"
         }[self]
+    
+class Cell(Enum):
+    EMPTY = "."
+    X = "X"
+    O = "O"
         
 
 
@@ -148,21 +153,21 @@ class TicTacToe(BoardGame):
 
     def __init__(self, human: HumanPlayer, computer: ComputerPlayer) -> None:
         super().__init__(human, computer)
-        self._board: list[str] = []
+        self._board: list[Cell] = []
         self._marks: dict[Player, str] = {}
 
     def reset(self) -> None:
-        self._board = ['.'] * 9
-        self._marks = {self._human: 'X', self._computer: 'O'}
+        self._board = [Cell.EMPTY] * 9
+        self._marks = {self._human: Cell.X, self._computer: Cell.O}
         self._current = self._human
 
     def render(self) -> str:
         cells = []
         for i, cell in enumerate(self._board):
-            if cell == '.':
+            if cell == Cell.EMPTY:
                 cells.append(str(i + 1))
             else:
-                cells.append(cell)
+                cells.append(cell.value)
         rows = [
             " | ".join(cells[0:3]),
             " | ".join(cells[3:6]),
@@ -173,7 +178,7 @@ class TicTacToe(BoardGame):
     def valid_moves(self) -> list[int]:
         moves = []
         for i, cell in enumerate(self._board):
-            if cell == '.':
+            if cell == Cell.EMPTY:
                 moves.append(i)
         return moves
 
@@ -192,9 +197,9 @@ class TicTacToe(BoardGame):
         mark = self._marks[self._current]
         self._board[value] = mark
 
-    def _winner_mark(self) -> str:
+    def _winner_mark(self) -> Cell:
         for a, b, c in self._WIN_LIST:
-            if self._board[a] != '.' and self._board[a] == self._board[b] == self._board[c]:
+            if self._board[a] != Cell.EMPTY and self._board[a] == self._board[b] == self._board[c]:
                 return self._board[a]
         return None
 
@@ -203,7 +208,7 @@ class TicTacToe(BoardGame):
         if winner:
             human_mark = self._marks[self._human]
             return GameResult.HUMAN_WIN if winner == human_mark else GameResult.COMPUTER_WIN
-        if '.' not in self._board:
+        if Cell.EMPTY not in self._board:
             return GameResult.DRAW
         return None
 

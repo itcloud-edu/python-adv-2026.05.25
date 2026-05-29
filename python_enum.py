@@ -20,3 +20,9 @@ class GameResult(Enum):
 print(GameResult.HUMAN_WIN.message())
 
 
+
+class Calc(Enum):
+    SUM=lambda a, b: a+b 
+    SUB=lambda a, b: a-b
+
+print(Calc.SUB(3,30))
