@@ -2,6 +2,8 @@ from abc import ABC, abstractmethod
 import random
 from enum import Enum, StrEnum
 from dataclasses import dataclass, field
+from pathlib import Path
+import json
 
 class GameResult(Enum):
     HUMAN_WIN = "human_win"
@@ -49,10 +51,21 @@ class Draw(ABC):
 class TicTacToeState:
     board: list[str] = field(default_factory=lambda: [Cell.EMPTY] * 9)
 
+    def save(self, path: str) -> None:
+        path = Path(path)
+        data = {"board" : [cell.value for cell in self.board]}
+        path.write_text(json.dumps(data), encoding="utf-8")
+
+
 @dataclass
 class Stick21State:
     sticks: int = 21
     last_player: str | None = None
+
+    def save(self, path: str) -> None:
+        path = Path(path)
+        data = {"sticks" : self.sticks, "last_player" : self.last_player.name }
+        path.write_text(json.dumps(data), encoding="utf-8")
 
 
 class ConsoleDraw(Draw):
@@ -220,6 +233,7 @@ class TicTacToe(BoardGame):
     def apply_move(self, value: int) -> None:
         mark = self._marks[self._current]
         self._state.board[value] = mark
+        self._state.save('data.json')
 
     def _winner_mark(self) -> Cell:
         for a, b, c in self._WIN_LIST:
@@ -275,6 +289,7 @@ class Stick21(BoardGame):
     def apply_move(self, move: int) -> None:
         self._state.sticks -= move
         self._state.last_player = self._current
+        self._state.save('data.json')
 
     def check_result(self) -> GameResult | None:
         if self._state.sticks > 0:
