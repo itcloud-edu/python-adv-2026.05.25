@@ -215,7 +215,7 @@ class Game:
 
 
 
-    def run_game(self,) -> None:
+    def run_game(self) -> None:
         if self._current_game is None:
             self._select_game()
         
@@ -227,7 +227,7 @@ class Game:
         draw.output(game.render())
 
         while game.check_result() is None:
-            move = game.current_player.choice_move(game, draw)
+            move = game.current_player.choice_move(game)
             game.apply_move(move)
             game.switch_player()
             draw.output("")
