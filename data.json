@@ -1,1 +1,1 @@
-{"sticks": 16, "last_player": "O"}
+{"board": ["X", ".", ".", ".", ".", "O", ".", ".", "."], "game": "TicTacToe"}

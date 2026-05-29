@@ -4,6 +4,7 @@ from enum import Enum, StrEnum
 from dataclasses import dataclass, field
 from pathlib import Path
 import json
+import os
 
 class GameResult(Enum):
     HUMAN_WIN = "human_win"
@@ -26,6 +27,7 @@ class Cell(StrEnum):
 class MenuChoice(Enum):
     TIC_TAC_TOE = "1"
     STICK_21 = "2"
+    CONTINUE = "3"
     EXIT = "0"
 
     @classmethod
@@ -53,7 +55,7 @@ class TicTacToeState:
 
     def save(self, path: str) -> None:
         path = Path(path)
-        data = {"board" : [cell.value for cell in self.board]}
+        data = {"board" : [cell.value for cell in self.board], "game": TicTacToe.TYPE}
         path.write_text(json.dumps(data), encoding="utf-8")
     
     @classmethod
@@ -70,7 +72,7 @@ class Stick21State:
 
     def save(self, path: str) -> None:
         path = Path(path)
-        data = {"sticks" : self.sticks, "player_type" : self.last_player.TYPE, "player_name": self.last_player.name }
+        data = {"sticks" : self.sticks, "player_type" : self.last_player.TYPE, "player_name": self.last_player.name , "game": Stick21.TYPE}
         path.write_text(json.dumps(data), encoding="utf-8")
 
     @classmethod
@@ -195,7 +197,7 @@ class BoardGame(ABC):
 
 
 class TicTacToe(BoardGame):
-
+    TYPE="TicTacToe"
     _WIN_LIST = (
         (0, 1, 2),
         (3, 4, 5),
@@ -277,6 +279,7 @@ class TicTacToe(BoardGame):
 
 
 class Stick21(BoardGame):
+    TYPE='Stick21'
     _INITIAL_STICKS = 21
     _MAX_TAKE = 3
 
@@ -349,12 +352,6 @@ class Game:
     def _play_round(self) -> None:
         game = self._current_game
         draw = self.draw
-
-        # Проверка на сохранение игры 
-        # game.load()
-        game.reset()
-
-        # game.update_state()
         draw.output(game.render())
 
         while game.check_result() is None:
@@ -389,12 +386,15 @@ class Game:
             draw.output('\n ==== Меню игры ====')
             draw.output('1. Крестики-нолики')
             draw.output('2. 21 палочка')
+            draw.output('3. Продолжить игру')
+            draw.output('----------------------')
             draw.output('0. Выйти')
             choice = MenuChoice.from_input(draw.input('Выберите игру: ').strip())
             if choice == MenuChoice.TIC_TAC_TOE:
                 draw.output('\n ---- Креститки-нолики ----')
                 draw.output('Вы - X, компьютер - O')
                 self._current_game = TicTacToe(self.human, self.computer)
+                self._current_game.reset()
                 return None
             if choice == MenuChoice.STICK_21:
                 draw.output('\n ---- 21 палочка ----')
@@ -403,6 +403,19 @@ class Game:
                     'Проигрывает тот, кто взял последнюю.'
                 )
                 self._current_game = Stick21(self.human, self.computer)
+                self._current_game.reset()
+                return None
+            if choice == MenuChoice.CONTINUE:
+                if os.path.exists('data.json'):
+                    path = Path('data.json')
+                    data = json.loads(path.read_text(encoding="utf-8"))
+                    if data['game'] == TicTacToe.TYPE:
+                        self._current_game = TicTacToe(self.human, self.computer)
+                        self._current_game.load(path)
+                    if data['game'] == Stick21.TYPE:
+                        self._current_game = Stick21(self.human, self.computer)
+                        self._current_game.load(path)
+                    
                 return None
 
             if choice == MenuChoice.EXIT:
