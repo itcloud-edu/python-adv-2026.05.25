@@ -32,12 +32,12 @@ class Player(ABC):
         self.draw = draw
 
     @abstractmethod
-    def choice_move(self, game: BoardGame, draw: Draw):
+    def choice_move(self, game: 'BoardGame', draw: Draw):
         pass
 
 class HumanPlayer(Player):
-    def choice_move(self, game: BoardGame):
-        draw = self.draw
+    def choice_move(self, game: 'BoardGame', draw: Draw):
+        #draw = self.draw
         while True:
             raw = draw.input(game.move_prompt()).strip()
             try:
@@ -51,8 +51,8 @@ class HumanPlayer(Player):
 
 
 class ComputerPlayer(Player):
-    def choice_move(self, game: BoardGame):
-        draw = self.draw
+    def choice_move(self, game: 'BoardGame', draw: Draw):
+        #draw = self.draw
         move = random.choice(game.valid_moves())
         draw.output(f"Компьютер выбирает {move + 1}")
         return move
@@ -192,7 +192,50 @@ class TicTacToe(BoardGame):
         return None
     
 class Stick21(BoardGame):
-    pass
+    def __init__(self, human: HumanPlayer, computer: ComputerPlayer) -> None:
+        super().__init__(human, computer)
+        #self._board: list[str] = []
+        #self._marks: dict[Player, str] = {}
+
+    def reset(self) -> None:
+        #self._board = ['.'] * 9
+        #self._marks = {self._human: 'X', self._computer: 'O'}
+        #self._current = self._human
+        totalSticks = 21
+        stics = totalSticks
+        maxStics = 3
+        takeStics = 0
+        HumanPlayer = True
+
+    def render(self) -> str:
+        stics = self.stics
+        return "Осталось палочек: ".stics
+    
+    def valid_moves(self) -> list[int]:
+        moves = []
+        for i in range(self.maxStics):
+            moves.append(i)
+        return moves
+    
+    def move_prompt(self) -> str:
+        return f'Укажите кол-во палочек (1-{self.maxStics}): '
+    
+    def parse_move(self, takeStics: int) -> int:
+        if takeStics < 1 or takeStics > self.maxStics:
+            raise ValueError(f'Можно взять от 1 до {maxStics} палочек. Попробуйте снова.')
+        return value
+    
+    def apply_move(self, takeStics: int) -> None:
+        stics -= takeStics
+
+    def check_result(self) -> bool:
+        winner = self._winner_mark()
+        if winner:
+            human_mark = self._marks[self._human]
+            return "human_win" if winner == human_mark else "computer_win"
+        if '.' not in self._board:
+            return "draw"
+        return None
 
 
 class Game:
@@ -251,7 +294,9 @@ class Game:
                 self._current_game = TicTacToe(self.human, self.computer)
                 return None
             if choice == '2':
-                continue
+                draw.output('\n ---- Игра 21 палочка ----')
+                draw.output('Вы - 1й ход, компьютер - 2й')
+                self._current_game = Stick21(self.human, self.computer)
 
             if choice == '0':
                 return None
