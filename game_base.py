@@ -57,23 +57,30 @@ class TicTacToeState:
         path.write_text(json.dumps(data), encoding="utf-8")
 
     def load(self, path: str) -> None:
-        pass
-
+        path = Path(path)
+        data = json.loads(path.read_text(encoding="utf-8"))
+        self.board = [Cell(cell) for cell in data["board"]]
+        
 
 @dataclass
 class Stick21State:
     sticks: int = 21
-    last_player: str | None = None
+    last_player: Player | None = None
 
     def save(self, path: str) -> None:
         path = Path(path)
-        data = {"sticks" : self.sticks, "last_player" : self.last_player.name }
+        data = {"sticks" : self.sticks, "player_type" : self.last_player.TYPE, "player_name": self.last_player.name }
         path.write_text(json.dumps(data), encoding="utf-8")
 
     @classmethod
     def load(cls, path: str) -> "Stick21State":
-        pass
-
+        path = Path(path)
+        data = json.loads(path.read_text(encoding="utf-8"))
+        if data["player_type"] == HumanPlayer.TYPE:
+            player = HumanPlayer(data["player_name"], ConsoleDraw())
+        if data["player_type"] == ComputerPlayer.TYPE:
+            player = ComputerPlayer(data["player_name"], ConsoleDraw())
+        return cls(sticks=data.get("sticks"), last_player=player)
 
 class ConsoleDraw(Draw):
     def input(self, value: str) -> None:
@@ -103,6 +110,8 @@ class Player(ABC):
 
 
 class HumanPlayer(Player):
+    TYPE = "human"
+
     def choice_move(self, game: BoardGame):
         draw = self.draw
         while True:
@@ -119,6 +128,8 @@ class HumanPlayer(Player):
 
 
 class ComputerPlayer(Player):
+    TYPE = "computer"
+
     def choice_move(self, game: BoardGame):
         draw = self.draw
         move = random.choice(game.valid_moves())
@@ -205,6 +216,10 @@ class TicTacToe(BoardGame):
         self._marks = {self._human: Cell.X, self._computer: Cell.O}
         self._current = self._human
 
+    def update_state(self) -> None:
+        self._state.load('data.json')
+   
+
     def render(self) -> str:
         cells = []
         for i, cell in enumerate(self._state.board):
@@ -270,6 +285,10 @@ class Stick21(BoardGame):
         self._state = Stick21State()
         self._current = self._human
 
+    def load(self, path) -> None:
+        self._state = Stick21State.load(path)
+        self._current = self._human
+
     def render(self) -> str:
         bar = "|" * self._state.sticks if self._state.sticks else "(пусто)"
         return f"Палочек: {self._state.sticks}\n{bar}"
@@ -328,7 +347,11 @@ class Game:
         game = self._current_game
         draw = self.draw
 
+        # Проверка на сохранение игры 
+        # game.load()
         game.reset()
+
+        # game.update_state()
         draw.output(game.render())
 
         while game.check_result() is None:

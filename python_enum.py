@@ -17,12 +17,6 @@ class GameResult(Enum):
             GameResult.COMPUTER_WIN: "Компьютер победил"
         }[self]
 
-print(GameResult.HUMAN_WIN.message())
+print(GameResult('human_win'))
 
 
-
-class Calc(Enum):
-    SUM=lambda a, b: a+b 
-    SUB=lambda a, b: a-b
-
-print(Calc.SUB(3,30))
