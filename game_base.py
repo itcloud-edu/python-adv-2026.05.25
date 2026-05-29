@@ -56,6 +56,9 @@ class TicTacToeState:
         data = {"board" : [cell.value for cell in self.board]}
         path.write_text(json.dumps(data), encoding="utf-8")
 
+    def load(self, path: str) -> None:
+        pass
+
 
 @dataclass
 class Stick21State:
@@ -66,6 +69,10 @@ class Stick21State:
         path = Path(path)
         data = {"sticks" : self.sticks, "last_player" : self.last_player.name }
         path.write_text(json.dumps(data), encoding="utf-8")
+
+    @classmethod
+    def load(cls, path: str) -> "Stick21State":
+        pass
 
 
 class ConsoleDraw(Draw):
