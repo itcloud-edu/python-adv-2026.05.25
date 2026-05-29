@@ -55,11 +55,12 @@ class TicTacToeState:
         path = Path(path)
         data = {"board" : [cell.value for cell in self.board]}
         path.write_text(json.dumps(data), encoding="utf-8")
-
-    def load(self, path: str) -> None:
+    
+    @classmethod
+    def load(cls, path: str) -> None:
         path = Path(path)
         data = json.loads(path.read_text(encoding="utf-8"))
-        self.board = [Cell(cell) for cell in data["board"]]
+        return cls(board=[Cell(cell) for cell in data["board"]])
         
 
 @dataclass
@@ -216,8 +217,10 @@ class TicTacToe(BoardGame):
         self._marks = {self._human: Cell.X, self._computer: Cell.O}
         self._current = self._human
 
-    def update_state(self) -> None:
-        self._state.load('data.json')
+    def load(self, path) -> None:
+        self._state = TicTacToeState.load(path)
+        self._marks = {self._human: Cell.X, self._computer: Cell.O}
+        self._current = self._human
    
 
     def render(self) -> str:
