@@ -23,7 +23,6 @@ class Cell(StrEnum):
     X = "X"
     O = "O"
         
-
 class MenuChoice(Enum):
     TIC_TAC_TOE = "1"
     STICK_21 = "2"
@@ -37,8 +36,6 @@ class MenuChoice(Enum):
                 return item
         return None
 
-
-
 class Draw(ABC):
     @abstractmethod
     def input(self, value: str) -> None:
@@ -47,7 +44,6 @@ class Draw(ABC):
     @abstractmethod
     def output(self, value: str) -> None:
         pass
-
 
 @dataclass
 class TicTacToeState:
@@ -64,7 +60,6 @@ class TicTacToeState:
         data = json.loads(path.read_text(encoding="utf-8"))
         return cls(board=[Cell(cell) for cell in data["board"]])
         
-
 @dataclass
 class Stick21State:
     sticks: int = 21
@@ -92,14 +87,12 @@ class ConsoleDraw(Draw):
     def output(self, value: str) -> None:
         print(value)
 
-
 class DisplayDraw(Draw):
     def input(self, value: str) -> None:
         pass
 
     def output(self, value: str) -> None:
         pass
-
 
 class Player(ABC):
 
@@ -110,7 +103,6 @@ class Player(ABC):
     @abstractmethod
     def choice_move(self, game: BoardGame, draw: Draw):
         pass
-
 
 class HumanPlayer(Player):
     TYPE = "human"
@@ -129,7 +121,6 @@ class HumanPlayer(Player):
                 continue
             return move
 
-
 class ComputerPlayer(Player):
     TYPE = "computer"
 
@@ -138,7 +129,6 @@ class ComputerPlayer(Player):
         move = random.choice(game.valid_moves())
         draw.output(f"Компьютер выбирает {game.format_move(move)}")
         return move
-
 
 class BoardGame(ABC):
     def __init__(self, human: HumanPlayer, computer: ComputerPlayer) -> None:
@@ -194,7 +184,6 @@ class BoardGame(ABC):
 
     def format_move(self, move: int) -> str:
         return str(move + 1)
-
 
 class TicTacToe(BoardGame):
     TYPE="TicTacToe"
@@ -277,7 +266,6 @@ class TicTacToe(BoardGame):
             return GameResult.DRAW
         return None
 
-
 class Stick21(BoardGame):
     TYPE='Stick21'
     _INITIAL_STICKS = 21
@@ -329,7 +317,6 @@ class Stick21(BoardGame):
         if self._state.last_player is self._human:
             return GameResult.COMPUTER_WIN
         return GameResult.HUMAN_WIN
-
 
 class Game:
     _instance = None
