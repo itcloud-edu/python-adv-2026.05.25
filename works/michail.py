@@ -245,13 +245,12 @@ class Game:
 
 
 
-    def run_game(self,) -> None:
+    def run_game(self) -> None:
         if self._current_game is None:
             self._select_game()
         
         game = self._current_game
         draw = self.draw
-
 
         game.reset()
         draw.output(game.render())

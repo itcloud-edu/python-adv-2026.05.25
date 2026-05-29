@@ -37,7 +37,6 @@ class Player(ABC):
 
 class HumanPlayer(Player):
     def choice_move(self, game: 'BoardGame', draw: Draw):
-        #draw = self.draw
         while True:
             raw = draw.input(game.move_prompt()).strip()
             try:
@@ -192,50 +191,52 @@ class TicTacToe(BoardGame):
         return None
     
 class Stick21(BoardGame):
+    _STICKS = 21
+    _MAX_TAKE = 3
+
     def __init__(self, human: HumanPlayer, computer: ComputerPlayer) -> None:
         super().__init__(human, computer)
-        #self._board: list[str] = []
-        #self._marks: dict[Player, str] = {}
+        self._sticks: int = self._STICKS
+        self._last_player: Player | None = None
 
     def reset(self) -> None:
-        #self._board = ['.'] * 9
-        #self._marks = {self._human: 'X', self._computer: 'O'}
-        #self._current = self._human
-        totalSticks = 21
-        stics = totalSticks
-        maxStics = 3
-        takeStics = 0
-        HumanPlayer = True
+        self._sticks = self._STICKS
+        self._current = self._human
+        self._last_player = None
 
     def render(self) -> str:
-        stics = self.stics
-        return "Осталось палочек: ".stics
+        if self._sticks > 0:
+            return '|' * self._sticks +f' ({str(self._sticks)})' 
+        else:
+            return  'Палочки закончились'
+    
     
     def valid_moves(self) -> list[int]:
-        moves = []
-        for i in range(self.maxStics):
-            moves.append(i)
-        return moves
+        if self._sticks < 3:
+            return list(range(0, self._sticks))
+        return list(range(0, self._MAX_TAKE))
     
     def move_prompt(self) -> str:
-        return f'Укажите кол-во палочек (1-{self.maxStics}): '
+        sticks = ', '.join([str(i+1) for i in self.valid_moves()])
+        return f'Укажите кол-во палочек ({sticks}):'
     
-    def parse_move(self, takeStics: int) -> int:
-        if takeStics < 1 or takeStics > self.maxStics:
-            raise ValueError(f'Можно взять от 1 до {maxStics} палочек. Попробуйте снова.')
+    def parse_move(self, move: int) -> int:
+        try:
+            value = int(move)-1
+        except ValueError:
+            raise ValueError('Введите число')
+        if value not in self.valid_moves():
+            raise ValueError('Неверный ход')
         return value
     
-    def apply_move(self, takeStics: int) -> None:
-        stics -= takeStics
+    def apply_move(self, move: int) -> None:
+        self._sticks -= move+1
+        self._last_player = self._current
 
-    def check_result(self) -> bool:
-        winner = self._winner_mark()
-        if winner:
-            human_mark = self._marks[self._human]
-            return "human_win" if winner == human_mark else "computer_win"
-        if '.' not in self._board:
-            return "draw"
-        return None
+    def check_result(self) -> bool | None:
+        if self._sticks > 0:
+            return None
+        return "human_win" if self._last_player == self._human else "computer_win"
 
 
 class Game:
@@ -264,8 +265,6 @@ class Game:
         
         game = self._current_game
         draw = self.draw
-
-
         game.reset()
         draw.output(game.render())
 
@@ -297,6 +296,7 @@ class Game:
                 draw.output('\n ---- Игра 21 палочка ----')
                 draw.output('Вы - 1й ход, компьютер - 2й')
                 self._current_game = Stick21(self.human, self.computer)
+                return None
 
             if choice == '0':
                 return None
