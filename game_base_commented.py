@@ -188,11 +188,7 @@ class BoardGame(ABC):
         self._current = self._human if self._current == self._computer else self._computer
 
     def format_move(self, move: int) -> str:
-        """
-        Как показать ход в сообщении (по умолчанию +1 для клеток 1–9).
-        Stick21 переопределяет: там ход уже 1, 2 или 3.
-        """
-        return str(move + 1)
+        return str(move)
 
 
 # =============================================================================
@@ -276,6 +272,13 @@ class TicTacToe(BoardGame):
         if '.' not in self._board:
             return "draw"
         return None
+    
+    def format_move(self, move: int) -> str:
+        """
+        Как показать ход в сообщении (по умолчанию +1 для клеток 1–9).
+        Stick21 переопределяет: там ход уже 1, 2 или 3.
+        """
+        return str(move + 1)
 
 
 # =============================================================================
@@ -363,7 +366,7 @@ class Game:
             self.value = value
             self.initialized = True
             self.draw = draw
-            self._current_game = None
+            self._current_game: BoardGame = None
             self.human = HumanPlayer('X', self.draw)
             self.computer = ComputerPlayer('O', self.draw)
 
@@ -371,7 +374,6 @@ class Game:
         """Одна партия: reset → цикл ходов → сообщение о результате."""
         game = self._current_game
         draw = self.draw
-
         game.reset()
         draw.output(game.render())
 
